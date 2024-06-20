@@ -10,10 +10,11 @@ import "./interfaces/ISwapRouterMinimal.sol";
 import "./interfaces/IERC20Swapper.sol";
 import "./ERC20Swapper.sol";
 
+/// @title ERC20SwapperV2
+/// @dev This contract is an upgradeable version of ERC20Swapper with additional functionality.
 contract ERC20SwapperV2 is ERC20Swapper {
-   function increaseBy2() public {
+    /// @notice Increases the interaction counter by 2
+    function increaseBy2() public {
         numberOfInteraction = numberOfInteraction + 2;
     }
 }
-
-

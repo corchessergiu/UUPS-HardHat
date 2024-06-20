@@ -9,11 +9,21 @@ import "./interfaces/IERC20Swapper.sol";
 import "./interfaces/IWETH9Minimal.sol";
 import "./interfaces/ISwapRouterMinimal.sol";
 
+/// @title ERC20Swapper
+/// @dev This contract allows swapping Ether for ERC20 tokens using Uniswap V3 and is upgradeable using UUPS proxy pattern.
 contract ERC20Swapper is Initializable, IERC20Swapper, OwnableUpgradeable, UUPSUpgradeable {
+    /// @notice Address of the Uniswap V3 Swap Router
     address public SWAP_ROUTER;
+
+    /// @notice Address of the WETH9 token
     address public WETH9;
+
+    /// @notice Counter to keep track of the number of interactions
     uint256 public numberOfInteraction;
 
+    /// @notice Initializes the contract with the Swap Router and WETH addresses
+    /// @param _swapRouter Address of the Uniswap V3 Swap Router
+    /// @param _WETH Address of the WETH9 token
     function initialize(address _swapRouter, address _WETH) public initializer {
         SWAP_ROUTER = _swapRouter;
         WETH9 = _WETH;
@@ -21,6 +31,10 @@ contract ERC20Swapper is Initializable, IERC20Swapper, OwnableUpgradeable, UUPSU
         __UUPSUpgradeable_init();
     }
 
+    /// @notice Swaps Ether to a specified ERC20 token using Uniswap V3
+    /// @param token Address of the ERC20 token to receive
+    /// @param minAmount Minimum amount of tokens expected to receive
+    /// @return amountOut Amount of tokens received from the swap
     function swapEtherToToken(address token, uint minAmount) public payable returns (uint) {
         require(msg.value > 0, "Insufficient ETH amount");
         require(msg.sender == tx.origin, "Call from EOA not from contract!");
@@ -44,15 +58,18 @@ contract ERC20Swapper is Initializable, IERC20Swapper, OwnableUpgradeable, UUPSU
         return amountOut;
     }
 
+    /// @notice Authorizes an upgrade to the contract. Only callable by the owner.
+    /// @param newImplementation Address of the new contract implementation
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
+    /// @notice Sets the address of the Swap Router
+    /// @param _swapRouter Address of the new Swap Router
     function setSwapRouter(address _swapRouter) external onlyOwner {
         SWAP_ROUTER = _swapRouter;
     }
 
+    /// @notice Increases the interaction counter by 1
     function increase() public {
         numberOfInteraction = numberOfInteraction + 1;
     }
 }
-
-
